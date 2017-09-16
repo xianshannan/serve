@@ -12,6 +12,7 @@ const { coroutine } = require('bluebird')
 const updateNotifier = require('update-notifier')
 const { red } = require('chalk')
 const nodeVersion = require('node-version')
+const httpProxy = require('http-proxy-middleware')
 
 // Utilities
 const pkg = require('../package')
@@ -64,6 +65,23 @@ if (flags.ignore && flags.ignore.length > 0) {
 }
 
 const handler = coroutine(function*(req, res) {
+  // Proxy功能
+  const proxy = JSON.parse(flags.proxy || false)
+  if (proxy) {
+    // eslint-disable-next-line guard-for-in
+    for (const k in proxy) {
+      const reg = new RegExp(k)
+      if (reg.test(req.url)) {
+        if (Object.prototype.toString.apply(proxy[k]) === '[object String]') {
+          const options = { target: proxy[k] }
+          return httpProxy(options)(req, res, () => {})
+          // eslint-disable-next-line no-else-return
+        } else {
+          return httpProxy(proxy[k])(req, res, () => {})
+        }
+      }
+    }
+  }
   yield serverHandler(req, res, flags, current, ignoredFiles)
 })
 

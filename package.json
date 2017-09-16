@@ -57,6 +57,8 @@
     "filesize": "3.5.10",
     "fs-extra": "4.0.1",
     "handlebars": "4.0.10",
+    "http-proxy": "1.16.2",
+    "http-proxy-middleware": "0.17.4",
     "ip": "1.1.5",
     "micro": "8.0.1",
     "micro-compress": "1.0.0",
